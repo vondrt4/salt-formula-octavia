@@ -89,6 +89,7 @@ Octavia manager service pillar:
           ca_certificate: '/etc/octavia/certs/ca_01.pem'
         controller_worker:
           amp_flavor_id: '967972bb-ab54-4679-9f53-bf81d5e28154'
+          amp_image_owner_id: '68520e9f926441ddb37b7c744c4005b7'
           amp_image_tag: amphora
           amp_ssh_key_name: octavia_ssh_key
           loadbalancer_topology: 'SINGLE'

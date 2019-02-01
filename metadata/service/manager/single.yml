@@ -39,6 +39,7 @@ parameters:
         ca_certificate: '/etc/pki/ca/octavia_ca/ca.crt'
       controller_worker:
         amp_flavor_id: ${_param:amp_flavor_id}
+        amp_image_owner_id: ${_param:amp_image_owner_id}
         amp_image_tag: amphora
         amp_ssh_key_name: octavia_ssh_key
         loadbalancer_topology: ${_param:octavia_loadbalancer_topology}
