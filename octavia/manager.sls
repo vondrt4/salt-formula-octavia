@@ -4,30 +4,38 @@
 
 {%- set ssh_dir = salt['file.dirname'](manager.ssh.private_key_file) %}
 
+{%- if manager.version not in ["mitaka"] %}
 octavia_manager_packages:
   pkg.installed:
   - names: {{ manager.pkgs }}
+{%- endif %}
 
 /etc/octavia/octavia_manager.conf:
   file.managed:
   - source: salt://octavia/files/{{ manager.version }}/octavia_manager.conf
   - template: jinja
+{%- if manager.version not in ["mitaka"] %}
   - require:
     - pkg: octavia_manager_packages
+{%- endif %}
 
 /etc/octavia/certificates/openssl.cnf:
   file.managed:
   - source: salt://octavia/files/{{ manager.version }}/certificates/openssl.cnf
+{%- if manager.version not in ["mitaka"] %}
   - require:
     - pkg: octavia_manager_packages
+{%- endif %}
 
 {% set dhclient_conf_path = '/etc/octavia/dhcp/dhclient.conf' %}
 
 {{ dhclient_conf_path }}:
   file.managed:
   - source: salt://octavia/files/{{ manager.version }}/dhcp/dhclient.conf
+{%- if manager.version not in ["mitaka"] %}
   - require:
     - pkg: octavia_manager_packages
+{%- endif %}
 
 octavia_ssh_dir:
   file.directory:
@@ -74,6 +82,7 @@ health_manager_port_dhclient:
   - require:
     - cmd: health_manager_port_set_mac
 
+{#
 health_manager_port_add_rule:
   iptables.append:
     - table: filter
@@ -83,6 +92,7 @@ health_manager_port_add_rule:
     - dport: 5555
     - proto: udp
     - save: True
+#}
 
 octavia_manager_services:
   service.running:

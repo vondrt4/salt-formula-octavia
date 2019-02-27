@@ -1,0 +1,91 @@
+applications:
+- neutron
+classes:
+- service.neutron.client
+parameters:
+  neutron:
+    client:
+      server:
+        octavia_identity:
+          endpoint_type: internalURL
+          network:
+            manila_service_network:
+              tenant: service
+              admin_state_up: True
+              subnet:
+                manila_service_subnet:
+                  cidr: ${_param:octavia_lb_mgmt_cidr}
+                  allocation_pools:
+                    - start: ${_param:octavia_lb_mgmt_allocation_pool_start}
+                      end: ${_param:octavia_lb_mgmt_allocation_pool_end}
+              port:
+                octavia-health-manager-listen-port-gtw01:
+                  fixed_ips:
+                    - ip_address: ${_param:octavia_health_manager_node01_address}
+                  device_owner: Octavia:health-mgr
+                  binding_host_id: ${_param:openstack_gateway_node01_hostname}
+                  security_groups:
+                    - lb-health-mgr-sec-grp
+                octavia-health-manager-listen-port-gtw02:
+                  fixed_ips:
+                    - ip_address: ${_param:octavia_health_manager_node02_address}
+                  device_owner: Octavia:health-mgr
+                  binding_host_id: ${_param:openstack_gateway_node02_hostname}
+                  security_groups:
+                    - lb-health-mgr-sec-grp
+                octavia-health-manager-listen-port-gtw03:
+                  fixed_ips:
+                    - ip_address: ${_param:octavia_health_manager_node03_address}
+                  device_owner: Octavia:health-mgr
+                  binding_host_id: ${_param:openstack_gateway_node03_hostname}
+                  security_groups:
+                  - lb-health-mgr-sec-grp
+          security_group:
+            lb-mgmt-sec-grp:
+              tenant: service
+              description: Octavia Management Security Group
+              rules:
+                - direction: ingress
+                  ethertype: IPv4
+                  protocol: icmp
+                - direction: ingress
+                  ethertype: IPv4
+                  protocol: TCP
+                  port_range_min: 22
+                  port_range_max: 22
+                - direction: ingress
+                  ethertype: IPv4
+                  protocol: TCP
+                  port_range_min: 9443
+                  port_range_max: 9443
+                - direction: ingress
+                  ethertype: IPv6
+                  protocol: icmpv6
+                  remote_ip_prefix: ::/0
+                - direction: ingress
+                  ethertype: IPv6
+                  protocol: TCP
+                  port_range_min: 22
+                  port_range_max: 22
+                  remote_ip_prefix: ::/0
+                - direction: ingress
+                  ethertype: IPv6
+                  protocol: TCP
+                  port_range_min: 9443
+                  port_range_max: 9443
+                  remote_ip_prefix: ::/0
+            lb-health-mgr-sec-grp:
+              tenant: service
+              description: Octavia Health Manager Security Group
+              rules:
+                - direction: ingress
+                  ethertype: IPv4
+                  protocol: UDP
+                  port_range_min: 5555
+                  port_range_max: 5555
+                - direction: ingress
+                  ethertype: IPv6
+                  protocol: UDP
+                  port_range_min: 5555
+                  port_range_max: 5555
+                  remote_ip_prefix: ::/0

@@ -6,7 +6,7 @@ parameters:
       heka:
         enabled: true
       sensu:
-        enabled: false
+        enabled: true
       sphinx:
         enabled: false
       grafana:
